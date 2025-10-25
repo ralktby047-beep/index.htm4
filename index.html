@@ -1,89 +1,453 @@
-<!DOCTYPE html>
-<html lang="ar">
+<!doctype html>
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>رحلة سنع — النسخة الذهبية</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
 <style>
-body { font-family: 'Noto Sans Arabic', sans-serif; background: linear-gradient(to bottom, #fff8dc, #fbe9a1); margin:0; padding:0; text-align:center; }
-.container { background-color: rgba(255,255,255,0.9); padding:30px; border-radius:15px; max-width:800px; margin:50px auto; box-shadow:0 4px 15px rgba(0,0,0,0.2); }
-h1 { font-size:2.8em; color:#b8860b; margin-bottom:20px; }
-.story { font-size:1.2em; color:#5b4636; line-height:1.7; margin-bottom:20px; }
-.proverb { font-weight:bold; color:#8b4513; margin:10px 0; }
-.question { font-weight:bold; margin:10px 0; }
-.options button { margin:5px; padding:10px 20px; border:none; border-radius:10px; cursor:pointer; background-color:#ffd700; color:#fff; font-size:1em; transition:background-color 0.3s ease; }
-.options button:hover { background-color:#e6c200; }
-#startBtn { background-color:#ffd700; color:#fff; font-size:1.3em; padding:15px 40px; border:none; border-radius:12px; cursor:pointer; transition:all 0.3s ease; margin-top:20px; }
-#startBtn:hover { background-color:#e6c200; }
-#backBtn, #nextBtn { background-color:#ffe066; color:#333; font-size:1em; padding:10px 25px; border:none; border-radius:10px; cursor:pointer; margin:10px auto; display:block; transition:background-color 0.3s ease; }
-#backBtn:hover, #nextBtn:hover { background-color:#ffd633; }
-.feedback { margin-top:10px; font-weight:bold; min-height:25px; }
+:root{
+  --gold-bg:#f6e6c9;
+  --card:#fffdf8;
+  --muted:#6b5a47;
+  --gold:#c99b3a;
+  --brown:#7b4f2b;
+  --accent:#8c5a22;
+  font-family: "Noto Naskh Arabic", "Segoe UI", Tahoma, sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,var(--gold-bg),#f2dfb3);color:#2a2a2a;display:flex;align-items:center;justify-content:center;padding:16px}
+.app{width:100%;max-width:980px;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.97));box-shadow:0 14px 40px rgba(20,20,20,0.08)}
+.header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(0,0,0,0.04);background:linear-gradient(90deg, rgba(201,155,58,0.06), transparent)}
+.logo{display:flex;gap:12px;align-items:center}
+.logo .icon{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--gold),#ffd27a);display:flex;align-items:center;justify-content:center;font-weight:900;color:#6b3b00;font-size:22px}
+.logo h1{margin:0;font-size:20px}
+.tag{font-size:12px;color:var(--muted)}
+.screen{display:none;padding:18px}
+.screen.active{display:block}
+.card{background:var(--card);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,0.04)}
+.small{font-size:12px;color:var(--muted)}
+.start-btn{background:linear-gradient(90deg,#b67e2b,#6b3b00);color:#fff;border:none;padding:10px 16px;border-radius:10px;font-weight:800;cursor:pointer}
+.start-btn.gray{background:#6b6b6b}
+.map-canvas{min-height:420px;border-radius:12px;padding:16px;position:relative;background:linear-gradient(180deg,#fff6e8,#fffaf0)}
+.stage-dot{position:absolute;width:96px;height:96px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:13px;cursor:pointer;background:rgba(255,255,255,0.95);box-shadow:0 6px 18px rgba(0,0,0,0.06);text-align:center;padding:6px}
+.stage-dot.locked{filter:grayscale(1);opacity:0.6}
+.stage-dot .emoji{font-size:28px}
+.stage-dot .label{margin-top:6px;background:rgba(255,255,255,0.9);padding:4px 6px;border-radius:6px;font-size:13px}
+#s1{left:6%;top:62%}
+#s2{left:28%;top:40%}
+#s3{left:48%;top:66%}
+#s4{left:70%;top:36%}
+#s5{left:84%;top:66%}
+#s6{left:40%;top:18%}
+#s7{left:72%;top:80%}
+.stage-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.stage-title{font-weight:900;font-size:18px}
+.story-area{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.story-text{flex:1}
+.story-image{width:180px;border-radius:8px;object-fit:cover;border:2px solid rgba(0,0,0,0.04);background:#fff;padding:6px}
+.question-area{margin-top:12px}
+.question-title{font-weight:800;margin-bottom:8px}
+.options{display:flex;flex-direction:column;gap:10px}
+.option-btn{background:#fff;border:2px solid rgba(0,0,0,0.04);padding:12px;border-radius:10px;font-weight:800;cursor:pointer;text-align:right}
+.option-btn.correct{border-color:rgba(45,150,45,0.25);background:linear-gradient(90deg,#f3fbf3,#fff)}
+.option-btn.wrong{border-color:rgba(200,60,60,0.12);opacity:0.9}
+.controls{display:flex;gap:8px;align-items:center;margin-top:10px}
+.feedback{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:18px}
+.badge{width:86px;height:86px;border-radius:50%;background:linear-gradient(135deg,#ffd27a,#f6c34d);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 8px 30px rgba(0,0,0,0.08)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center}
+.modal .box{background:white;padding:16px;border-radius:12px;max-width:700px;width:94%}
+@media (max-width:860px){ .story-image{display:none} .stage-dot{width:78px;height:78px} }
+.top-info{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%}
+.top-info .left, .top-info .right{font-size:13px;color:var(--muted)}
 </style>
 </head>
 <body>
-<div class="container" id="startScreen">
-<h1>رحلة سنع — النسخة الذهبية</h1>
-<div class="story">
-في يوم من الأيام، كانت ميثا — فتاة إماراتية تحب الذكاء الاصطناعي والتكنولوجيا — تزور يدّتها فاطمة في منطقة مليحة التراثية في إمارة الشارقة 🏜️.<br>
-وأثناء وجودها هناك، تكتشف صندوقًا خشبيًا قديمًا داخل المجلس.<br>
-عندما تفتحه، تجد جهازًا ذكيًا صغيرًا عليه كلمة:<br>
-“تراثي” 🤖<br>
-تخبرها اليدّه أن هذا الجهاز فيه أسرار السنع الإماراتي، لكنه لا يشتغل إلا إذا حلّت ميثا مجموعة من الألغاز والمهمات التراثية.<br>
-ومن هنا تبدأ رحلة سنع — رحلة بين الماضي والحاضر، بين الذكاء الاصطناعي والتراث، بين العلم والسنع الأصيل.
+<div class="app" role="application" aria-label="رحلة سنع - النسخة الذهبية">
+  <div class="header">
+    <div class="logo"><div class="icon">س</div><div><h1>رحلة سنع</h1><div class="tag">ذكاء المستقبل... بسنع الأجداد</div></div></div>
+    <div style="width:420px">
+      <div class="top-info">
+        <div class="right">فريق الثميد — مدرسة الثميد للبنات</div>
+        <div class="left">هاكاثون الإمارات تبرمج</div>
+      </div>
+    </div>
+  </div>
+
+  <section id="splash" class="screen active">
+    <div class="card" style="max-width:920px;margin:12px auto;text-align:right">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div style="flex:1;text-align:right">
+          <div style="font-weight:900;font-size:26px">رحلة سنع — النسخة الذهبية</div>
+          <div class="small" style="margin-top:6px">انضمي إلى ميثا و"تراثي" في مغامرة سريعة تعيد لنا سنع الأجداد.</div>
+        </div>
+        <div style="width:220px;text-align:left">
+          <img src="sheikhs.png" alt="الشيخ زايد والشيخ راشد" style="width:100%;height:110px;object-fit:cover;border-radius:8px" onerror="this.style.display='none'"/>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(90deg, rgba(201,155,58,0.06), transparent);text-align:right">
+        <div style="font-weight:800;margin-bottom:6px">بيانات الفريق للمسابقة</div>
+        <div class="small"><strong>المسابقة:</strong> هاكاثون الإمارات تبرمج</div>
+        <div class="small"><strong>المدرسة:</strong> مدرسة الثميد للبنات</div>
+        <div class="small" style="margin-top:8px"><strong>أسماء الطالبات:</strong></div>
+        <ul style="margin:6px 0 0 0;padding-left:18px;text-align:right">
+          <li>ريم سالم</li>
+          <li>الريم خالد</li>
+          <li>شمايل عبدالله</li>
+          <li>عزه احمد</li>
+        </ul>
+      </div>
+
+      <div style="margin-top:14px;text-align:center">
+        <p style="margin:6px 0">في صباحٍ مشمس وصلت ميثا إلى بيت يدّتها فاطمة… وبين رائحة القهوة وصوت المهباش وجدت جهازًا قديمًا اسمه "تراثي". قال لها: <em>ساعديني أستعيد سنع الأجداد!</em></p>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:10px">
+          <button class="start-btn" id="startBtn">ابدأ الرحلة</button>
+          <button class="start-btn gray" id="downloadBtn">تحميل النسخة (ZIP)</button>
+        </div>
+        <div class="small" style="margin-top:8px">اللعبة: 7 مراحل • أسئلة تفاعلية • قصص شعبية • زر خروج للخريطة في كل سؤال</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="map" class="screen">
+    <div class="card" style="padding:12px">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+        <button id="homeBtn" class="start-btn gray" style="padding:8px 12px;font-size:13px">الصفحة الرئيسية 🏠</button>
+      </div>
+      <div class="map-canvas card">
+        <svg width="100%" height="100%" style="position:absolute;left:0;top:0;z-index:0" viewBox="0 0 1100 700" preserveAspectRatio="none"><rect width="100%" height="100%" fill="#fff7ea"/></svg>
+        <div id="s1" class="stage-dot" data-stage="1"><div class="emoji">🏠</div><div class="label">مجلس اليدّه</div></div>
+        <div id="s2" class="stage-dot locked" data-stage="2"><div class="emoji">🏺</div><div class="label">السوق القديم</div></div>
+        <div id="s3" class="stage-dot locked" data-stage="3"><div class="emoji">🌴</div><div class="label">المزرعة</div></div>
+        <div id="s4" class="stage-dot locked" data-stage="4"><div class="emoji">🪨</div><div class="label">آثار الأجداد</div></div>
+        <div id="s5" class="stage-dot locked" data-stage="5"><div class="emoji">🇦🇪</div><div class="label">قيام الاتحاد</div></div>
+        <div id="s6" class="stage-dot locked" data-stage="6"><div class="emoji">🎭</div><div class="label">ثقافتنا</div></div>
+        <div id="s7" class="stage-dot locked" data-stage="7"><div class="emoji">🏡</div><div class="label">بيت التراث</div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px">
+        <div><div class="small">أوسمة مكتسبة</div><div id="progressText" class="small" style="font-weight:800">وسام السنع 0/7</div></div>
+        <div><button id="openRewards" class="start-btn" style="padding:8px 12px;font-size:13px">ملف إنجاز ميثا</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="stageScreen" class="screen">
+    <div class="card">
+      <div class="stage-header">
+        <div>
+          <div class="stage-title" id="stageTitle">المرحلة</div>
+          <div class="small" id="stageSubtitle">وصف قصير</div>
+        </div>
+        <div>
+          <button id="exitStage" class="start-btn gray">الخروج للخريطة</button>
+        </div>
+      </div>
+      <div id="stageContent"></div>
+    </div>
+  </section>
+
+  <section id="feedback" class="screen">
+    <div class="card feedback">
+      <div id="fbContent"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="fbNext" class="start-btn" style="display:none">التالي</button>
+        <button id="fbMap" class="start-btn gray" style="display:none">العودة للخريطة</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="rewardsModal" class="modal" style="display:none">
+    <div class="box"><div class="card"><h3 style="margin-top:0">ملف إنجاز ميثا</h3><div id="medalsBox" style="display:flex;gap:8px;flex-wrap:wrap"></div><div style="margin-top:12px;text-align:left"><button id="closeRewards" class="start-btn">أغلق</button></div></div></div>
+  </div>
+
+  <div class="footer card" style="margin:12px">نموذج أولي • مقدم من فريق مدرسة الثميد للبنات</div>
 </div>
-<button id="startBtn">ابدأ الرحلة</button>
-</div>
-<div class="container" id="gameScreen" style="display:none;">
-<button id="backBtn">الرجوع إلى شاشة البداية</button>
-<h2 id="stageTitle"></h2>
-<div class="story" id="stageStory"></div>
-<div class="proverb" id="stageProverb"></div>
-<div class="question" id="stageQuestion"></div>
-<div class="options" id="stageOptions"></div>
-<div class="feedback" id="feedback"></div>
-<button id="nextBtn" style="display:none;">التالي</button>
-</div>
+
 <script>
-const startBtn=document.getElementById('startBtn');
-const backBtn=document.getElementById('backBtn');
-const startScreen=document.getElementById('startScreen');
-const gameScreen=document.getElementById('gameScreen');
-const stageTitle=document.getElementById('stageTitle');
-const stageStory=document.getElementById('stageStory');
-const stageProverb=document.getElementById('stageProverb');
-const stageQuestion=document.getElementById('stageQuestion');
-const stageOptions=document.getElementById('stageOptions');
-const feedback=document.getElementById('feedback');
-const nextBtn=document.getElementById('nextBtn');
-const stages=[
-{title:'آداب المجلس',story:'في يومٍ من الأيام، دخل ضيف كبير إلى مجلس يدّه فاطمة. رحّب به الجميع بحرارة وقدّموا له القهوة باليد اليمنى. جلست ميثا تراقب كل حركة، ولاحظت كيف أن ابتسامة الترحيب ونبرة الصوت الهادئة تجعل الضيف يشعر بالراحة والاحترام. تعلمت أن احترام الكبير والترحيب بالضيف هو أساس السنع، وأن الكرم لا يكتمل إلا بالنية الطيبة.',proverb:'الضيف ضيف الله، والكرم من شيم العرب.',question:'إذا دخل ضيف كبير في السن، شو تسوين؟',hint:'تذكري قواعد المجالس الإماراتية… اليد اليمنى دايمًا لها دور.',options:[{text:'أوقف وأرحب فيه باحترام',correct:true},{text:'أتجاهله',correct:false},{text:'أضحك عليه',correct:false}]},
-{title:'السوق القديم',story:'ذهبت ميثا إلى السوق القديم، حيث رائحة البهارات والتمور تملأ المكان. رأت البائعين يتبادلون التحية والابتسامات مع الزبائن، وشاهدت بائعًا يعيد لزبون نسي الزيادة بالغلط. لاحظت أن الأمانة والصدق كانوا زينة التاجر، وأن التعامل بالعدل يجعل الناس تحبه وتثق فيه. فهمت أن السنع لا يقتصر على المجالس، بل يشمل كل تعاملاتنا اليومية.',proverb:'الصدق زين، والكذب شين.',question:'شو لازم يسوي التاجر إذا أعطاه الزبون زيادة بالغلط؟',hint:'السنع الحقيقي يظهر في التصرف الصحيح مع المال الزائد.',options:[{text:'يحتفظ فيها',correct:false},{text:'يرجّعها له',correct:true},{text:'يتجاهلها',correct:false}]},
-{title:'المزرعة',story:'زارت ميثا المزرعة مع جدها، وشاهدت النخيل الطويل الممتد في صفوف منظمة. ساعدت جدها في سقي الفسائل الصغيرة، وتعلمت أن كل شجرة تحتاج إلى صبر وعناية. قال لها جدها: "النخلة مثل الإنسان، إذا اهتمّيت فيها وأعطيتها حبك ووقتك، تعطيك خيرها." فهمت ميثا أن الزراعة ليست فقط عملًا جسديًا، بل درس في الصبر والعطاء والسنع الإماراتي الأصيل.',proverb:'الزرع من بذره، والكرم من أصله.',question:'شو ترمز له النخلة عند أهل الإمارات؟',hint:'شجرة الصبر والعطاء لها رمز مشهور عند أهل الإمارات.',options:[{text:'رمز للكرم والعطاء',correct:true},{text:'رمز للكسل',correct:false},{text:'مجرد شجرة',correct:false}]}
-];
-let currentStage=0;
-function loadStage(index){
-const stage=stages[index];
-stageTitle.textContent=stage.title;
-stageStory.innerHTML=stage.story;
-stageProverb.textContent=stage.proverb;
-stageQuestion.textContent=stage.question;
-stageOptions.innerHTML='';
-feedback.textContent='';
-nextBtn.style.display='none';
-stage.options.forEach(opt=>{
-const btn=document.createElement('button');
-btn.textContent=opt.text;
-btn.addEventListener('click',()=>{
-if(opt.correct){feedback.textContent='إجابتك صحيحة ✅';nextBtn.style.display='block';}
-else{feedback.textContent='لقد اخترت الإجابة الخاطئة. حاولي مرة أخرى. 💡 تلميح: '+stage.hint;}
-});
-stageOptions.appendChild(btn);
-});
+/* ---------- State & DOM ---------- */
+const screens = { splash: document.getElementById('splash'), map: document.getElementById('map'), stage: document.getElementById('stageScreen'), feedback: document.getElementById('feedback') };
+const startBtn = document.getElementById('startBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const homeBtn = document.getElementById('homeBtn'); // زر العودة للصفحة الرئيسية
+const sDots = document.querySelectorAll('.stage-dot');
+const exitStage = document.getElementById('exitStage');
+const stageContent = document.getElementById('stageContent');
+const stageTitle = document.getElementById('stageTitle');
+const stageSubtitle = document.getElementById('stageSubtitle');
+const fbContent = document.getElementById('fbContent');
+const fbNext = document.getElementById('fbNext');
+const fbMap = document.getElementById('fbMap');
+const progressText = document.getElementById('progressText');
+const rewardsModal = document.getElementById('rewardsModal');
+const openRewards = document.getElementById('openRewards');
+const closeRewards = document.getElementById('closeRewards');
+const medalsBox = document.getElementById('medalsBox');
+
+let state = { currentStage: null, medals: 0, stagesCompleted: {1:false,2:false,3:false,4:false,5:false,6:false,7:false}, stageProgress: {} };
+
+/* ---------- Stage Content (المحتوى المحدث) ---------- */
+const STAGES = {
+  // التعديل 1: المرحلة 1 - آداب المجلس
+  1: {
+    id: 1,
+    title: 'المرحلة 1: آداب المجلس',
+    subtitle: 'السنع: إكرام الضيف',
+    story: `<div class="story-area"><div class="story-text"><strong>قصة: الضيف الكريم</strong><p>في يومٍ من الأيام، دخل ضيف كبير إلى مجلس يدّه فاطمة. رحّب به الجميع بحرارة وقدّموا له القهوة باليد اليمنى، كما علمتهم العادات الإماراتية القديمة. جلست ميثا تراقب كل حركة، ولاحظت كيف أن ابتسامة الترحيب ونبرة الصوت الهادئة تجعل الضيف يشعر بالراحة والاحترام. تعلمت أن احترام الكبير والترحيب بالضيف هو أساس السنع، وأن الكرم لا يكتمل إلا بالنية الطيبة.</p><p style="font-weight:700;margin-top:10px">المثل: "الضيف ضيف الله، والكرم من شيم العرب."</p></div></div>`,
+    questions: [
+      { q: 'وفقًا للسنع الإماراتي الذي تعلّمته ميثا في مجلس اليدّة، ما هي اليد التي يجب أن تُستخدم لتقديم القهوة للضيف؟', opts: ['اليد اليسرى', 'اليد اليمنى', 'كلتا اليدين'], a: 1, hint: 'تذكّر أن اليد التي تعطي هي الأكرم، والعرب تُفضلها في الكرم والسنع.' },
+      { q: 'ما هو أفضل تعبير يصف "السنع" في هذه المرحلة؟', opts: ['التعاون في العمل', 'إكرام الضيف والترحيب به', 'المحافظة على البيئة'], a: 1, hint: 'ركّز على الشطر الأول من المثل، ففيه قمة الترحيب والتقدير.' },
+      { q: 'إذا دخلت مجلسًا وفيه مجموعة من كبار السن، أي التصرفات التالية هو الأصوب وفقًا لآداب المجلس؟', opts: ['الجلوس فورًا في المقعد الذي يعجبني', 'إلقاء التحية بصوت مرتفع والانتظار حتى يدعوني للجلوس', 'البدء في استخدام الهاتف فورًا'], a: 1, hint: 'الاحترام يبدأ بالاستئذان قبل الجلوس، وهذا السنع له الأولوية.' }
+    ]
+  },
+  // التعديل 1: المرحلة 2 - السوق القديم
+  2: {
+    id: 2,
+    title: 'المرحلة 2: السوق القديم',
+    subtitle: 'السنع: الأمانة والصدق',
+    story: `<div class="story-area"><div class="story-text"><strong>قصة: التاجر الصادق</strong><p>ذهبت ميثا إلى السوق القديم، حيث رائحة البهارات والتمور تملأ المكان. رأت البائعين يتبادلون التحية والابتسامات مع الزبائن، وشاهدت بائعًا يعيد لزبون نسي الزيادة بالغلط. لاحظت أن الأمانة والصدق كانوا زينة التاجر، وأن التعامل بالعدل يجعل الناس تحبه وتثق فيه. فهمت أن السنع لا يقتصر على المجالس، بل يشمل كل تعاملاتنا اليومية.</p><p style="font-weight:700;margin-top:10px">المثل: "الصدق زين، والكذب شين."</p></div></div>`,
+    questions: [
+      { q: 'ما هي الصفات التي جعلت الناس تثق بالتاجر وتحبه في السوق القديم؟', opts: ['المظهر الثمين', 'الأمانة والصدق في التعامل', 'القدرة على مساومة الزبون'], a: 1, hint: 'ألم يقل المثل أن الكذب هو أسوأ ما يكون؟ الصفة المضادة هي المطلوبة.' },
+      { q: 'ما هو التصرف الذي يتماشى مع السنع في التعاملات التجارية اليومية؟', opts: ['المبالغة في وصف البضاعة لجذب الزبون', 'الالتزام بالوعد وقول الحقيقة عن جودة السلعة', 'تقديم الهدايا لتفادي الشكاوى'], a: 1, hint: 'النزاهة في السوق القديم كانت بمثابة عقد غير مكتوب بين التاجر والزبون.' },
+      { q: 'رأيت مبلغًا من المال سقط من محفظة شخص دون أن يلاحظ، ما هو السنع الصحيح في هذا الموقف؟', opts: ['تجاهل المال والابتعاد', 'أخذ المال لأنه لم يلاحظ', 'تنبيه الشخص وإعادة المال له فورًا'], a: 2, hint: 'استرجع قصة التاجر الذي أعاد الزيادة بالغلط... الموقف يشبهه تمامًا.' }
+    ]
+  },
+  // التعديل 1: المرحلة 3 - المزرعة
+  3: {
+    id: 3,
+    title: 'المرحلة 3: المزرعة',
+    subtitle: 'السنع: الصبر والعطاء',
+    story: `<div class="story-area"><div class="story-text"><strong>قصة: النخلة والأجداد</strong><p>زارت ميثا المزرعة مع جدها، وشاهدت النخيل الطويل الممتد في صفوف منظمة. ساعدت جدها في سقي الفسائل الصغيرة، وتعلمت أن كل شجرة تحتاج إلى صبر وعناية. قال لها جدها: "النخلة مثل الإنسان، إذا اهتمّيت فيها وأعطيتها حبك ووقتك، تعطيك خيرها." فهمت ميثا أن الزراعة ليست فقط عملًا جسديًا، بل درس في الصبر والعطاء والسنع الإماراتي الأصيل.</p><p style="font-weight:700;margin-top:10px">المثل: "الزرع من بذره، والكرم من أصله."</p></div></div>`,
+    questions: [
+      { q: 'ما هو الدرس الأساسي الذي تعلمته ميثا عن النخلة وعن السنع؟', opts: ['أن النخلة تعطي ثمارها بسرعة دون جهد', 'أن النخلة تحتاج إلى صبر وعناية لتعطي خيرها', 'أن النخلة لا تحتاج إلى ماء كثير'], a: 1, hint: 'الجد ربط بين عطاء النخلة وعطاء الإنسان، فكلاهما يحتاج إلى مدة طويلة وثابته من الاهتمام.' },
+      { q: 'ماذا يعني هذا المثل في سياق السنع وتربية الأبناء؟', opts: ['أن الخير يأتي فقط من البذور الغالية', 'أن الأخلاق والكرم تنبع من أصول وتربية صالحة', 'أن الزراعة أهم من التربية'], a: 1, hint: 'الأصل هنا لا يعني المكان... بل يعني الأساس والنشأة.' },
+      { q: 'ما هي القيمة التي تمثلها العلاقة بين الأجداد والأرض (المزرعة) في التراث الإماراتي؟', opts: ['الكسل والراحة', 'الصبر والعطاء وحب الأرض', 'الاستهلاك السريع للموارد'], a: 1, hint: 'العلاقة مع الأرض لم تكن يوماً سريعة... بل كانت علاقة طويلة الأمد ومُجهِدة.' }
+    ]
+  },
+  // التعديل 1: المرحلة 4 - آثار الأجداد (الاسم والقصة والأسئلة)
+  4: {
+    id: 4,
+    title: 'المرحلة 4: آثار الأجداد',
+    subtitle: 'السنع: احترام الماضي والتعلم منه',
+    story: `<div class="story-area"><div class="story-text"><strong>قصة: متحف مليحة</strong><p>زارت ميثا متحف مليحة، حيث عرضت الرسومات والنقوش القديمة التي تحكي حياة الأجداد. رأت النقوش التي تصور جمال الصحراء والصيادين والجمال، ولاحظت كيف استخدم الأجداد هذه الرسومات لتوثيق حياتهم وحكاياتهم. شعرت ميثا بالدهشة والإعجاب، وفهمت أن السنع الحقيقي يكمن في احترام الماضي وتعلم الحكم من تجارب الأجداد.</p><p style="font-weight:700;margin-top:10px">المثل: "من حفظ قديمه، أمن من جديده."</p></div></div>`,
+    questions: [
+      { q: 'لماذا كان الأجداد يقومون بالرسومات والنقوش على الصخور؟', opts: ['عشان يتفاخرون', 'لتوثيق قصصهم وحياتهم للأجيال القادمة', 'للزينة فقط'], a: 1, hint: 'إذا حفظنا القديم... فما هو الدور الذي تلعبه هذه النقوش في حفظه؟' },
+      { q: 'كيف يمكن تطبيق المثل "من حفظ قديمه، أمن من جديده" في حياتنا؟', opts: ['أن تتجاهل كل التكنولوجيا الحديثة', 'أن تحترم الماضي وتتعلم من حكم الأجداد لتواجه المستقبل بثقة', 'أن تبقى في الماضي ولا تفكر في المستقبل'], a: 1, hint: 'كلمة "أمن" هي مفتاح الحل... كيف يكون الماضي مصدراً للأمان للمستقبل؟' },
+      { q: 'زيارة المواقع الأثرية والمتاحف جزء من السنع. ما هو التصرف الصحيح عند التعامل مع الآثار القديمة؟', opts: ['لمسها والكتابة عليها للتذكار', 'المحافظة عليها واحترام قيمتها التاريخية', 'أخذ قطعة صغيرة منها كهدية'], a: 1, hint: 'احترام الماضي يبدأ بحماية آثاره... فما هو دورك في حمايتها؟' }
+    ]
+  },
+  // التعديل 1: المرحلة 5 - قيام الاتحاد
+  5: {
+    id: 5,
+    title: 'المرحلة 5: قيام الاتحاد',
+    subtitle: 'السنع: التعاون وحب الوطن',
+    story: `<div class="story-area"><div class="story-text"><strong>قصة: العز والمجد</strong><p>في 2 ديسمبر 1971، اجتمع قادة الإمارات ليبنوا وطنًا واحدًا موحدًا. تعلّمت ميثا كيف تعاون القادة على تجاوز التحديات، وكيف أن حب الوطن والالتزام به هو أساس القوة والوحدة. شعرت بالفخر وهي تسمع قصص التضحيات والعمل المشترك، وفهمت أن الاتحاد ليس مجرد اتفاق سياسي، بل هو درس في التعاون والمحبة والسنع الإماراتي.</p><p style="font-weight:700;margin-top:10px">المثل: "إيد وحده ما تصفّق."</p></div></div>`,
+    questions: [
+      { q: 'ما هو الأساس الذي قام عليه بناء دولة الإمارات العربية المتحدة؟', opts: ['التنافس الشديد بين القادة', 'التعاون والمحبة وحب الوطن المشترك', 'قرار شخص واحد فقط'], a: 1, hint: 'تذكر أن القادة "اجتمعوا" لتجاوز التحديات، فماذا يعني الاجتماع؟' },
+      { q: 'ماذا تعني هذه العبارة في سياق قيام الاتحاد؟', opts: ['أن العمل الجماعي لا فائدة منه', 'أن الوحدة والتعاون هما سر القوة والنجاح', 'أن كل قائد يعمل بمفرده'], a: 1, hint: 'التصفيق لا يتم إلا بـ "اثنين" على الأقل... فكر في المعنى المزدوج.' },
+      { q: 'في السنع الإماراتي، عندما يواجه فريقك تحديًا، ما هو التصرف الذي يعكس قيمة التعاون؟', opts: ['الابتعاد عن الفريق وتركه يحل المشكلة بمفرده', 'المساعدة والعمل مع الجميع بروح الفريق الواحد', 'إلقاء اللوم على الآخرين'], a: 1, hint: 'الروح الواحدة هي التي تحول الأيدي المنفردة إلى يد تصنع المستحيل.' }
+    ]
+  },
+  // التعديل 1: المرحلة 6 - ثقافتنا
+  6: {
+    id: 6,
+    title: 'المرحلة 6: ثقافتنا',
+    subtitle: 'السنع: تقوية الروابط الاجتماعية',
+    story: `<div class="story-area"><div class="story-text"><strong>قصة: ألعاب الماضي</strong><p>اكتشفت ميثا الألعاب القديمة للبنات مثل "الصلّة" و"التيلة" و"الغمّة (الغميضة)" — وهي لعبة اختباء مشهورة، حيث تُعصب عين إحدى الفتيات (الغامّة) لتبدأ البحث عن زميلاتها المختبئات بالاعتماد على السمع. لاحظت ميثا كيف كانت هذه الألعاب تجمع الفتيات معًا، وتعلّمهن التعاون والمرح البسيط. فهمت أن الترفيه زمان كان وسيلة لتقوية الروابط الاجتماعية، وأن السنع يظهر حتى في ألعابنا اليومية.</p><p style="font-weight:700;margin-top:10px">المثل: "اللعب زين إذا ما خلى الدين."</p></div></div>`,
+    questions: [
+      { q: 'ما هو الدور الاجتماعي الذي كانت تلعبه الألعاب القديمة مثل "الغمّة"؟', opts: ['قضاء الوقت بمفردها', 'تقوية الروابط الاجتماعية وتعليم التعاون والمرح البسيط', 'المنافسة الشديدة لتحديد الفائز'], a: 1, hint: 'الألعاب القديمة لم تكن فردية؛ كانت تجمّع الفتيات دائماً، فما هو المغزى؟' },
+      { q: 'ما هو شرط "السنع" في هذا المثل؟', opts: ['أن نلعب فقط الألعاب الإلكترونية', 'أن يكون اللعب وسيلة للمرح والتعاون دون الإخلال بالواجبات الدينية والأخلاقية', 'أن نلعب طوال اليوم وننسى كل شيء آخر'], a: 1, hint: 'المثل يضع "خطاً أحمر" يجب عدم تجاوزه... ما هو هذا الخط؟' },
+      { q: 'في التجمعات العائلية، ما هو السنع في التعامل مع الأطفال الأصغر سنًا؟', opts: ['تجاهلهم وتركهم يلعبون بمفردهم', 'مشاركتهم اللعب والاهتمام بهم كجزء من السنع الاجتماعي', 'توبيخهم إذا أحدثوا ضوضاء'], a: 1, hint: 'السنع الاجتماعي يشمل جميع الأعمار، وخاصة من هم بحاجة للاهتمام.' }
+    ]
+  },
+  // التعديل 1: المرحلة 7 - بيت التراث
+  7: {
+    id: 7,
+    title: 'المرحلة 7: بيت التراث',
+    subtitle: 'السنع: الممارسة والمشاركة',
+    story: `<div class="story-area"><div class="story-text"><strong>الختام: سفيرة السنع</strong><p>بعد أن أنهت ميثا جميع المراحل، عادت إلى بيت يدّه فاطمة، حيث جلست للتفكير بكل ما تعلمته. قالت لها اليدّه: "التراث ما يعيش في الكتب فقط، بل يعيش في قلوبنا وأفعالنا اليومية." فهمت ميثا أن السنع الإماراتي ليس مجرد كلمات، بل سلوك وأفعال، وأن المحافظة على التراث تبدأ بتعلمه وممارسته ومشاركته مع الآخرين.</p><p style="font-weight:700;margin-top:10px">المثل: "من لا ماضي له، لا حاضر له."</p></div></div>`,
+    questions: [
+      { q: 'حسب قول اليدّة فاطمة، أين يعيش التراث الحقيقي؟', opts: ['في المتاحف فقط', 'في قلوبنا وأفعالنا اليومية', 'في الكتب القديمة فقط'], a: 1, hint: 'اليدّة فرّقت بين التراث في الكتب والتراث "الحي"... فما هو هذا التراث الحي؟' },
+      { q: 'ما هي أهمية التراث في تشكيل مستقبلنا؟', opts: ['أن نعيش في الماضي دائمًا', 'أن الماضي هو أساس الحاضر والمستقبل، ويجب تعلمه وممارسته', 'أن الماضي يعيق التقدم'], a: 1, hint: 'إذا لم يكن لنا ماضٍ نحفظه... فكيف يمكننا أن نكون في الحاضر؟' },
+      { q: 'بعد إكمال رحلة السنع، ما هو أهم سلوك لـ "ميثا" يدل على المحافظة على التراث؟', opts: ['أن تنسى ما تعلمته وتبدأ شيئًا جديدًا', 'أن تبدأ بممارسة السنع ومشاركته مع عائلتها وأصدقائها', 'أن تحتفظ بالمعلومات لنفسها'], a: 1, hint: 'التراث ليس معلومة صامتة، بل هو سلوك يجب نقله للآخرين... كيف يتم ذلك؟' }
+    ]
+  }
+};
+
+/* ---------- Utility functions ---------- */
+function show(screenId){
+  Object.values(screens).forEach(s=>s.classList.remove('active'));
+  screens[screenId].classList.add('active');
+  window.scrollTo(0,0);
 }
-startBtn.addEventListener('click',()=>{startScreen.style.display='none';gameScreen.style.display='block';loadStage(currentStage);});
-backBtn.addEventListener('click',()=>{gameScreen.style.display='none';startScreen.style.display='block';});
-nextBtn.addEventListener('click',()=>{currentStage++;if(currentStage<stages.length){loadStage(currentStage);}else{stageTitle.textContent='مبروك! 🎉';stageStory.textContent='لقد أكملت رحلة سنع وتعلمت الكثير عن السنع والتراث الإماراتي.';stageProverb.textContent='';stageQuestion.textContent='';stageOptions.innerHTML='';nextBtn.style.display='none';feedback.textContent='';}});
+startBtn.addEventListener('click', ()=> show('map'));
+// التعديل 3: وظيفة زر العودة للصفحة الرئيسية
+if (homeBtn) {
+    homeBtn.addEventListener('click', () => {
+        // يمكن هنا إضافة كود لحفظ التقدم إذا أردت، حاليًا يعود للشاشة الافتتاحية
+        show('splash');
+    });
+}
+
+// download button - expects ZIP in same folder if you upload it later
+downloadBtn.addEventListener('click', ()=> {
+  const url = 'rahlet-sanaa.zip';
+  window.location.href = url;
+});
+
+/* stage dots click */
+sDots.forEach(dot=>{
+  dot.addEventListener('click', ()=>{
+    const stage = Number(dot.dataset.stage);
+    // تم تبسيط شرط الفتح ليسمح بفتح المراحل المكتملة أيضاً
+    const playable = (stage === 1) || state.stagesCompleted[stage-1] || state.stagesCompleted[stage] || !dot.classList.contains('locked');
+    if(playable) openStage(stage);
+    else alert('أكملي المرحلة السابقة أولًا لفتح هذه المرحلة.');
+  });
+});
+
+function openStage(stageId){
+  state.currentStage = stageId;
+  if(state.stageProgress[stageId] === undefined) state.stageProgress[stageId] = 0;
+  renderStage(stageId);
+  show('stage');
+}
+
+function renderStage(id){
+  const st = STAGES[id];
+  stageTitle.textContent = st.title;
+  stageSubtitle.textContent = st.subtitle;
+  let html = '';
+  
+  // دمج القصة مع الصورة لتوفير قالب واحد
+  html += `<div class="card">${st.story}</div>`;
+
+
+  if(st.questions && st.questions.length > 0){
+    html += `<div class="card question-area" id="qArea" style="margin-top:10px"></div>`;
+  } else {
+    html += `<div style="height:12px"></div>`;
+  }
+
+  stageContent.innerHTML = html;
+  
+  if(st.questions && st.questions.length > 0){
+    // عند فتح المرحلة، إذا كانت قد اكتملت مسبقًا، نختمها لتجنب تكرار الأسئلة
+    if(state.stageProgress[id] >= st.questions.length || state.stagesCompleted[id]) {
+        completeStage(id);
+    } else {
+        renderQuestionArea(id, state.stageProgress[id]);
+    }
+  }
+}
+
+
+/* ---------- Questions rendering (التعديل الرئيسي لآلية الإجابة) ---------- */
+function renderQuestionArea(stageId, qIndex){
+  const st = STAGES[stageId];
+  const qArea = document.getElementById('qArea');
+  if(!qArea) return;
+  
+  // تحقق من اكتمال جميع الأسئلة
+  if(qIndex >= st.questions.length){
+    completeStage(stageId);
+    return;
+  }
+  
+  const q = st.questions[qIndex];
+  state.stageProgress[stageId] = qIndex; // تحديث تقدم اللاعب في السؤال
+
+  let html = `<div class="question-title">سؤال ${qIndex+1}: ${q.q}</div>`;
+  html += `<div class="options" id="opts">`;
+  q.opts.forEach((opt,idx)=> {
+    html += `<button class="option-btn" data-idx="${idx}">${opt}</button>`;
+  });
+  html += `</div>`;
+  // إضافة مساحة التلميح (التي ستُظهر رسالة الخطأ والتلميح)
+  html += `<div id="hintArea" class="small" style="color:var(--brown);margin-top:10px;display:none;font-weight:700"></div>`;
+  html += `<div class="controls"><button id="exitBtn" class="start-btn gray">الخروج للخريطة</button></div>`;
+  qArea.innerHTML = html;
+
+  const opts = qArea.querySelectorAll('.option-btn');
+  const hintArea = document.getElementById('hintArea');
+
+  opts.forEach(b=>{
+    b.addEventListener('click', ()=>{
+      opts.forEach(x=> x.disabled = true);
+      const idx = Number(b.dataset.idx);
+      
+      if(idx === q.a){
+        // الإجابة الصحيحة
+        b.classList.add('correct');
+        hintArea.style.display = 'none';
+        
+        // الانتقال للسؤال التالي
+        setTimeout(()=> {
+            renderQuestionArea(stageId, qIndex + 1);
+        }, 700);
+      } else {
+        // الإجابة الخاطئة
+        b.classList.add('wrong');
+        
+        // التعديل 4: ظهور رسالة الخطأ والتلميح
+        hintArea.innerHTML = `**إجابة خاطئة. حاول مرة أخرى.**<br>${q.hint}`;
+        hintArea.style.display = 'block';
+
+        setTimeout(()=> {
+          // تمكين الأزرار مرة أخرى للاعب ليحاول
+          opts.forEach(x=> x.disabled = false);
+          b.disabled = true; // تعطيل الزر الذي تم اختياره خطأ
+          b.classList.remove('wrong');
+        }, 900);
+      }
+    });
+  });
+
+  document.getElementById('exitBtn').addEventListener('click', ()=> show('map'));
+}
+
+/* ---------- Complete stage and medals ---------- */
+function completeStage(id){
+  if(!state.stagesCompleted[id]){
+    state.stagesCompleted[id] = true;
+    state.medals += 1;
+    progressText.textContent = `وسام السنع ${state.medals}/7`;
+    addMedal(STAGES[id].title);
+    
+    // تحديث شكل النقطة على الخريطة
+    const dot = document.querySelector(`.stage-dot[data-stage='${id}']`);
+    if(dot){ 
+        dot.style.background = 'linear-gradient(135deg,var(--gold),#ffd27a)'; 
+        dot.style.color='#6b3b00'; // تغيير لون الخط ليناسب الخلفية الذهبية
+        dot.title = 'منجز'; 
+    }
+    
+    // فتح المرحلة التالية
+    const nextDot = document.querySelector(`.stage-dot[data-stage='${id+1}']`);
+    if(nextDot) nextDot.classList.remove('locked');
+  }
+  
+  // عرض رسالة الإكمال والوسام
+  fbContent.innerHTML = `<div class="badge">✨</div><div style="font-weight:800;margin-top:6px">مبروك! أكملت ${STAGES[id].title}</div><div class="small" style="margin-top:6px">حصلت على +1 وسام</div>`;
+  show('feedback');
+  fbNext.style.display = 'none'; // لا يوجد زر التالي بعد إكمال المرحلة
+  fbMap.style.display = 'inline-block';
+  fbMap.onclick = ()=> { show('map'); fbMap.style.display='none'; };
+}
+
+/* add medal to rewards modal */
+function addMedal(title){
+  const el = document.createElement('div');
+  el.style.cssText = 'width:120px;text-align:center';
+  el.innerHTML = `<div style="width:80px;height:80px;border-radius:12px;background:linear-gradient(135deg,#ffd27a,#f6c34d);display:flex;align-items:center;justify-content:center;font-weight:800">✨</div><div class="small" style="margin-top:6px">${title}</div>`;
+  medalsBox.appendChild(el);
+}
+
+/* ---------- Controls ---------- */
+exitStage.addEventListener('click', ()=> show('map'));
+openRewards.addEventListener('click', ()=> rewardsModal.style.display='flex');
+closeRewards.addEventListener('click', ()=> rewardsModal.style.display='none');
+document.querySelector(`.stage-dot[data-stage='1']`).classList.remove('locked');
+
 </script>
 </body>
 </html>
